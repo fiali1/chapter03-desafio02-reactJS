@@ -1,0 +1,79 @@
+.container {
+  margin: 0 auto;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 99vw;
+    height: 25rem;
+    margin-bottom: 5rem;
+  }
+
+  .content {
+    width: 100%;
+    margin-bottom: 5rem;
+
+    h1 {
+      font-weight: 700;
+      font-size: 3rem;
+      color: var(--heading);
+      margin-bottom: 1.5rem;
+    }
+
+    .info {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--info);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 4rem;
+
+      div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-right: 1.5rem;
+      }
+
+      svg {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .postBodyContainer {
+      
+      .postBodyContent {
+        text-align: justify;
+
+        h2 {
+          display: inline-block;
+          font-size: 2.25rem;
+          font-weight: 700;
+          margin-bottom: 2.5rem;
+        }  
+
+        p {
+          display: inline-block;
+          font-size: 1.125rem;
+          font-weight: 400;
+          margin-bottom: 1.25rem;
+        }
+
+        li {
+          font-size: 1.125rem;
+          font-weight: 400;
+          margin-bottom: 1.25rem;
+        }
+
+        & + .postBodyContent {
+          margin-top: 2.5rem;
+        }
+      }
+    }
+  }
+}
