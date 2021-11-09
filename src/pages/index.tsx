@@ -28,9 +28,13 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
+  preview: boolean;
 }
 
-export default function Home({ postsPagination }: HomeProps): JSX.Element {
+export default function Home({
+  postsPagination,
+  preview,
+}: HomeProps): JSX.Element {
   const [results, setResults] = useState(postsPagination.results);
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
 
@@ -85,21 +89,43 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
               </button>
             </div>
           )}
+          {preview && (
+            <aside>
+              <Link href="/api/exit-preview">
+                <a>Sair do modo Preview</a>
+              </Link>
+            </aside>
+          )}
         </div>
+        <script
+          src="https://utteranc.es/client.js"
+          repo="fiali1/chapter03-desafio02-reactJS"
+          issue-term="pathname"
+          theme="github-dark"
+          crossOrigin="anonymous"
+          async
+        />
       </main>
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({
+  preview = false,
+  previewData,
+}) => {
   const prismic = getPrismicClient();
   const postsResponse = await prismic.query(
-    Prismic.Predicates.at('document.type', 'post')
+    Prismic.Predicates.at('document.type', 'post'),
+    {
+      ref: previewData?.ref ?? null,
+    }
   );
 
   return {
     props: {
       postsPagination: postsResponse,
+      preview,
     },
   };
 };

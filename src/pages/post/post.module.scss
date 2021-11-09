@@ -14,7 +14,7 @@
 
   .content {
     width: 100%;
-    margin-bottom: 5rem;
+    margin-bottom: 60px;
 
     h1 {
       font-weight: 700;
@@ -23,25 +23,35 @@
       margin-bottom: 1.5rem;
     }
 
-    .info {
-      font-size: 0.875rem;
-      font-weight: 400;
-      color: var(--info);
+    .infoContainer {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
+      flex-direction: column;
+      align-items: start;
       margin-bottom: 4rem;
-
-      div {
+      
+      .infoRow {
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: var(--info);
         display: flex;
         flex-direction: row;
         align-items: center;
-        margin-right: 1.5rem;
-      }
+        justify-content: flex-start;
 
-      svg {
-        margin-right: 0.5rem;
+        div {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          margin-right: 1.5rem;
+        }
+
+        svg {
+          margin-right: 0.5rem;
+        }
+
+        & + .infoRow {
+          margin-top: 1rem;
+        }
       }
     }
 
@@ -61,7 +71,10 @@
           display: inline-block;
           font-size: 1.125rem;
           font-weight: 400;
-          margin-bottom: 1.25rem;
+
+          & + p {
+            margin-top: 1.25rem;
+          }
         }
 
         li {
@@ -75,5 +88,46 @@
         }
       }
     }
+  }
+
+  .navContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 3rem 0;
+
+    .navPrevious, .navNext {
+      cursor: pointer;
+
+      h5 {
+        margin-bottom: 0.5rem;
+        font-size: 1.125rem;
+        font-weight: 400;
+        color: var(--heading);
+      }
+
+      p {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--highlight);
+      }
+    }
+
+    .navPrevious {
+      grid-column-start: 1;
+      grid-column-end: 2;
+      text-align: left;
+    }
+
+    .navNext {
+      grid-column-start: 2;
+      grid-column-end: 3;
+      text-align: right;
+    }
+    
+    
   }
 }

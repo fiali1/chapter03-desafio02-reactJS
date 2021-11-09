@@ -37,4 +37,14 @@ body, input, textarea, select, button {
 a {
   text-decoration: none;
   color: var(--highlight);
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+}
+
+hr {
+  width: 100%;
+  border: 1px solid var(--body);
 }
