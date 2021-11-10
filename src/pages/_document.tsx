@@ -13,7 +13,7 @@ export default class MyDocument extends Document {
           <script
             async
             defer
-            src="//static.cdn.prismic.io/prismic.js?repo=chapter03-desafio02-reactJS&new=true"
+            src="https://static.cdn.prismic.io/prismic.js?new=true&repo=your-repo-name"
           />
         </Head>
         <body>

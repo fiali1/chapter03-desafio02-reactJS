@@ -11,6 +11,7 @@ import Header from '../../components/Header';
 import { getPrismicClient } from '../../services/prismic';
 
 import styles from './post.module.scss';
+import Comments from '../../components/Comments';
 
 interface Post {
   uid?: string;
@@ -35,12 +36,14 @@ interface PostProps {
   post: Post;
   nextPost: Post;
   previousPost: Post;
+  preview: boolean;
 }
 
 export default function Post({
   post,
   nextPost,
   previousPost,
+  preview,
 }: PostProps): JSX.Element {
   const router = useRouter();
 
@@ -75,68 +78,81 @@ export default function Post({
   return (
     <>
       <Header />
-      <main className={styles.container}>
-        <img src={post.data.banner.url} alt="" />
-        <article className={styles.content}>
-          <h1>{post.data.title}</h1>
-          <div className={styles.infoContainer}>
-            <div className={styles.infoRow}>
-              <div>
-                <FiCalendar size={20} />
-                <p>{formatDate(post.first_publication_date, false)}</p>
+      <main>
+        <div className={styles.container}>
+          <img src={post.data.banner.url} alt="" />
+          <article className={styles.content}>
+            <h1>{post.data.title}</h1>
+            <div className={styles.infoContainer}>
+              <div className={styles.infoRow}>
+                <div>
+                  <FiCalendar size={20} />
+                  <p>{formatDate(post.first_publication_date, false)}</p>
+                </div>
+                <div>
+                  <FiUser size={20} />
+                  <p>{post.data.author}</p>
+                </div>
+                <div>
+                  <FiClock size={20} />
+                  <p>{calcReadTime()} min</p>
+                </div>
               </div>
-              <div>
-                <FiUser size={20} />
-                <p>{post.data.author}</p>
-              </div>
-              <div>
-                <FiClock size={20} />
-                <p>{calcReadTime()} min</p>
+              <div className={styles.infoRow}>
+                <p>
+                  <i>
+                    *editado em {formatDate(post.last_publication_date, true)}
+                  </i>
+                </p>
               </div>
             </div>
-            <div className={styles.infoRow}>
-              <p>
-                <i>
-                  *editado em {formatDate(post.last_publication_date, true)}
-                </i>
-              </p>
-            </div>
-          </div>
-          <div className={styles.postBodyContainer}>
-            {post.data.content.map(contentItem => (
-              <div key={contentItem.heading} className={styles.postBodyContent}>
-                <h2>{contentItem.heading}</h2>
+            <div className={styles.postBodyContainer}>
+              {post.data.content.map(contentItem => (
                 <div
-                  // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{
-                    __html: RichText.asHtml(contentItem.body),
-                  }}
-                />
-              </div>
-            ))}
+                  key={contentItem.heading}
+                  className={styles.postBodyContent}
+                >
+                  <h2>{contentItem.heading}</h2>
+                  <div
+                    // eslint-disable-next-line react/no-danger
+                    dangerouslySetInnerHTML={{
+                      __html: RichText.asHtml(contentItem.body),
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </article>
+          <hr />
+          <div className={styles.navContainer}>
+            {previousPost ? (
+              <Link href={`/post/${previousPost.uid}`}>
+                <div className={styles.navPrevious}>
+                  <h5>Como utilizar Hooks</h5>
+                  <p>Post anterior</p>
+                </div>
+              </Link>
+            ) : (
+              <></>
+            )}
+            {nextPost ? (
+              <Link href={`/post/${nextPost.uid}`}>
+                <div className={styles.navNext}>
+                  <h5>Como utilizar Hooks</h5>
+                  <p>Proximo post</p>
+                </div>
+              </Link>
+            ) : (
+              <></>
+            )}
           </div>
-        </article>
-        <hr />
-        <div className={styles.navContainer}>
-          {previousPost ? (
-            <Link href={`/post/${previousPost.uid}`}>
-              <div className={styles.navPrevious}>
-                <h5>Como utilizar Hooks</h5>
-                <p>Post anterior</p>
-              </div>
+          <Comments />
+          {preview && (
+            <Link href="/api/exit-preview">
+              <aside className={styles.exitPreviewButton}>
+                <a>Sair do modo Preview</a>
+              </aside>
             </Link>
-          ) : (
-            <></>
-          )}
-          {nextPost ? (
-            <Link href={`/post/${nextPost.uid}`}>
-              <div className={styles.navNext}>
-                <h5>Como utilizar Hooks</h5>
-                <p>Proximo post</p>
-              </div>
-            </Link>
-          ) : (
-            <></>
           )}
         </div>
       </main>
@@ -146,25 +162,33 @@ export default function Post({
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient();
-  const postsResponse = await prismic.query(
-    Prismic.Predicates.at('document.type', 'post')
+  const response = await prismic.query(
+    [Prismic.predicates.at('document.type', 'post')],
+    {
+      fetch: [],
+      pageSize: 100,
+    }
   );
 
-  const params = postsResponse.results.map(post => ({
-    params: { slug: post.uid },
-  }));
-
   return {
-    paths: params,
+    paths: response.results.map(post => ({
+      params: { slug: post.uid },
+    })),
     fallback: true,
   };
 };
 
-export const getStaticProps: GetStaticProps = async context => {
-  const { slug } = context.params;
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  preview = false,
+  previewData = {},
+}) => {
+  const { slug } = params;
 
   const prismic = getPrismicClient();
-  const response = await prismic.getByUID('post', String(slug), {});
+  const response = await prismic.getByUID('post', String(slug), {
+    ref: previewData?.ref ?? null,
+  });
 
   const nextResponse = await prismic.query(
     // Replace `article` with your doc type
@@ -195,6 +219,7 @@ export const getStaticProps: GetStaticProps = async context => {
       post,
       nextPost,
       previousPost,
+      preview,
     },
   };
 };

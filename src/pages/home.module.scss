@@ -75,4 +75,23 @@
       color: var(--highlight);
     }
   }
+
+  .exitPreviewButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 5rem;
+    height: 58px;
+    border-radius: 4px;
+    background: var(--heading);
+    cursor: pointer;
+
+    a {
+      text-align: center;
+      color: var(--background);
+      font-weight: 600;
+    }
+  }
 }
+
